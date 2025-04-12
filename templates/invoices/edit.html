@@ -146,9 +146,17 @@
                                     <span>Imponibile:</span>
                                     <span>€<span id="invoice-subtotal">{{ "%.2f"|format(invoice.subtotal) }}</span></span>
                                 </div>
+                                <div class="d-flex justify-content-between mb-2" id="enpab-row">
+                                    <span>Contributo ENPAB:</span>
+                                    <span>€<span id="invoice-enpab">{{ "%.2f"|format(invoice.enpab_amount) }}</span></span>
+                                </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>IVA:</span>
                                     <span>€<span id="invoice-vat">{{ "%.2f"|format(invoice.total_vat) }}</span></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2" id="stamp-row">
+                                    <span>Imposta di bollo:</span>
+                                    <span>€<span id="invoice-stamp">{{ "%.2f"|format(invoice.stamp_duty) }}</span></span>
                                 </div>
                                 <div class="d-flex justify-content-between fw-bold">
                                     <span>TOTALE:</span>
@@ -266,6 +274,31 @@
                     form.classList.add('was-validated')
                 }, false)
             })
-    })()
+    })();
+    
+    // Toggle visibility of ENPAB and stamp fields based on checkbox status
+    document.addEventListener('DOMContentLoaded', function() {
+        // ENPAB toggle
+        const enpabCheckbox = document.getElementById('apply_enpab');
+        const enpabRateField = document.querySelector('label[for="enpab_rate"]').parentNode;
+        
+        function toggleEnpabField() {
+            enpabRateField.style.display = enpabCheckbox.checked ? 'block' : 'none';
+        }
+        
+        enpabCheckbox.addEventListener('change', toggleEnpabField);
+        toggleEnpabField(); // Initial state
+        
+        // Stamp toggle
+        const stampCheckbox = document.getElementById('apply_stamp');
+        const stampAmountField = document.querySelector('label[for="stamp_amount"]').parentNode;
+        
+        function toggleStampField() {
+            stampAmountField.style.display = stampCheckbox.checked ? 'block' : 'none';
+        }
+        
+        stampCheckbox.addEventListener('change', toggleStampField);
+        toggleStampField(); // Initial state
+    });
 </script>
 {% endblock %}
