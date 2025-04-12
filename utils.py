@@ -89,6 +89,10 @@ def generate_pdf_invoice(invoice):
         if invoice.apply_stamp:
             enpab_label += ' (su imponibile + bollo)'
         data.append(['', '', '', enpab_label + ':', f"€{invoice.enpab_amount:.2f}"])
+        
+        # Aggiungi nota esplicativa
+        if invoice.apply_stamp:
+            data.append(['', '', '', 'Nota: IVA calcolata solo sull\'ENPAB relativo all\'imponibile', ''])
     
     data.append(['', '', '', 'IVA:', f"€{invoice.total_vat:.2f}"])
     

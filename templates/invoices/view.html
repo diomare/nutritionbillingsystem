@@ -205,6 +205,12 @@
                                 </td>
                                 <td class="text-end">€{{ "%.2f"|format(invoice.enpab_amount) }}</td>
                             </tr>
+                            {% if invoice.apply_enpab and invoice.apply_stamp %}
+                            <tr>
+                                <td colspan="5" class="text-end">
+                                    <small class="text-muted fst-italic">Nota: IVA calcolata solo sull'ENPAB relativo all'imponibile</small>
+                                </td>
+                            </tr>
                             {% endif %}
                             <tr>
                                 <td colspan="4" class="text-end"><strong>IVA:</strong></td>
