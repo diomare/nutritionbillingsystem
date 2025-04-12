@@ -276,7 +276,11 @@ def add_invoice():
                 notes=request.form.get('notes'),
                 payment_due_date=datetime.strptime(request.form.get('payment_due_date'), '%Y-%m-%d').date() if request.form.get('payment_due_date') else None,
                 status=request.form.get('status', 'draft'),
-                health_service_related=True if request.form.get('health_service_related') == 'on' else False
+                health_service_related=True if request.form.get('health_service_related') == 'on' else False,
+                apply_enpab=True if request.form.get('apply_enpab') == 'on' else False,
+                apply_stamp=True if request.form.get('apply_stamp') == 'on' else False,
+                enpab_rate=float(request.form.get('enpab_rate', 4.0)),
+                stamp_amount=float(request.form.get('stamp_amount', 2.0))
             )
             
             db.session.add(new_invoice)
@@ -345,6 +349,10 @@ def edit_invoice(invoice_id):
             invoice.payment_due_date = datetime.strptime(request.form.get('payment_due_date'), '%Y-%m-%d').date() if request.form.get('payment_due_date') else None
             invoice.status = request.form.get('status', 'draft')
             invoice.health_service_related = True if request.form.get('health_service_related') == 'on' else False
+            invoice.apply_enpab = True if request.form.get('apply_enpab') == 'on' else False
+            invoice.apply_stamp = True if request.form.get('apply_stamp') == 'on' else False
+            invoice.enpab_rate = float(request.form.get('enpab_rate', 4.0))
+            invoice.stamp_amount = float(request.form.get('stamp_amount', 2.0))
             
             # Delete existing items and create new ones
             for item in invoice.items:

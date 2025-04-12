@@ -184,11 +184,44 @@
                 </div>
             </div>
             
-            <div class="form-check mb-4">
+            <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="health_service_related" name="health_service_related" {% if invoice.health_service_related %}checked{% endif %}>
                 <label class="form-check-label" for="health_service_related">
                     Fattura relativa a prestazioni sanitarie (da inviare al Sistema Tessera Sanitaria)
                 </label>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="apply_enpab" name="apply_enpab" {% if invoice.apply_enpab %}checked{% endif %}>
+                        <label class="form-check-label" for="apply_enpab">
+                            Applica contributo ENPAB (4%)
+                        </label>
+                    </div>
+                    <div class="mt-2">
+                        <label for="enpab_rate" class="form-label">Percentuale ENPAB</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="enpab_rate" name="enpab_rate" value="{{ "%.2f"|format(invoice.enpab_rate) }}" step="0.01" min="0">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="apply_stamp" name="apply_stamp" {% if invoice.apply_stamp %}checked{% endif %}>
+                        <label class="form-check-label" for="apply_stamp">
+                            Applica imposta di bollo (€2,00)
+                        </label>
+                    </div>
+                    <div class="mt-2">
+                        <label for="stamp_amount" class="form-label">Importo imposta di bollo</label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="number" class="form-control" id="stamp_amount" name="stamp_amount" value="{{ "%.2f"|format(invoice.stamp_amount) }}" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="mb-4">

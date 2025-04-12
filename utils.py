@@ -79,30 +79,51 @@ def generate_pdf_invoice(invoice):
     
     # Add totals row
     data.append(['', '', '', 'Imponibile:', f"€{invoice.subtotal:.2f}"])
+    
+    if invoice.apply_enpab:
+        data.append(['', '', '', f'Contributo ENPAB {invoice.enpab_rate}%:', f"€{invoice.enpab_amount:.2f}"])
+    
     data.append(['', '', '', 'IVA:', f"€{invoice.total_vat:.2f}"])
+    
+    if invoice.apply_stamp:
+        data.append(['', '', '', 'Imposta di bollo:', f"€{invoice.stamp_duty:.2f}"])
+    
     data.append(['', '', '', 'TOTALE:', f"€{invoice.total:.2f}"])
     
     # Create table
     table = Table(data, colWidths=[220, 60, 80, 60, 80])
+    # Calculate the number of rows dedicated to the product items (excluding header and totals)
+    item_rows = len(invoice.items)
+    
+    # Calculate row index where totals begin
+    totals_start = item_rows + 1  # +1 for the header row
+    
     table.setStyle(TableStyle([
+        # Header row styling
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 12),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -4), colors.beige),
+        
+        # Items rows styling (all rows between header and totals)
+        ('BACKGROUND', (0, 1), (-1, totals_start), colors.beige),
+        ('GRID', (0, 0), (-1, totals_start), 1, colors.black),
+        
+        # General text styling
         ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-        ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
-        ('ALIGN', (0, 1), (0, -4), 'LEFT'),
         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
         ('FONTSIZE', (0, 1), (-1, -1), 10),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -4), 1, colors.black),
-        ('LINEBELOW', (3, -3), (-1, -3), 1, colors.black),
-        ('LINEBELOW', (3, -2), (-1, -2), 1, colors.black),
-        ('LINEBELOW', (3, -1), (-1, -1), 2, colors.black),
-        ('FONTNAME', (3, -1), (4, -1), 'Helvetica-Bold'),
+        
+        # Align right for numeric columns
+        ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
+        ('ALIGN', (0, 1), (0, totals_start), 'LEFT'),
+        
+        # Styling for the totals section
+        ('LINEBELOW', (3, -1), (-1, -1), 2, colors.black),  # Double line under final total
+        ('FONTNAME', (3, -1), (4, -1), 'Helvetica-Bold'),  # Bold for final total
     ]))
     
     elements.append(table)
@@ -126,6 +147,22 @@ def generate_pdf_invoice(invoice):
     footer_text = """
     Fattura emessa ai sensi dell'art. 21 del DPR 633/72 e successive modifiche.
     """
+    
+    if invoice.apply_enpab:
+        footer_text += """
+        Contributo previdenziale ENPAB applicato ai sensi della Legge 335/95.
+        """
+    
+    if invoice.apply_stamp:
+        footer_text += """
+        Imposta di bollo assolta sull'originale ai sensi del D.M. 17 Giugno 2014.
+        """
+    
+    if invoice.health_service_related:
+        footer_text += """
+        Prestazione sanitaria da comunicare al Sistema Tessera Sanitaria ai sensi del D.M. 31/07/2015.
+        """
+    
     elements.append(Paragraph(footer_text, normal_style))
     
     # Build the PDF
