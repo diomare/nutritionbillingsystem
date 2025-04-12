@@ -219,8 +219,14 @@ function updateInvoiceTotals() {
         enpabAmount = (subtotal + stampAmount) * (enpabRate / 100);
         
         // Ma l'IVA si applica solo sull'ENPAB calcolato sull'imponibile (non sul bollo)
-        const enpabWithoutStamp = subtotal * (enpabRate / 100);
-        totalVat += enpabWithoutStamp * 0.22;
+        // e solo se ci sono elementi con IVA
+        const hasVatItems = document.querySelectorAll('input[name^="items"][name$="[vat_rate]"]');
+        const hasItemsWithVat = Array.from(hasVatItems).some(input => parseFloat(input.value) > 0);
+        
+        if (hasItemsWithVat) {
+            const enpabWithoutStamp = subtotal * (enpabRate / 100);
+            totalVat += enpabWithoutStamp * 0.22;
+        }
     }
     
     // Calculate total: subtotal + ENPAB + VAT on both + stamp
