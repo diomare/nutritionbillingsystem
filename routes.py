@@ -420,12 +420,14 @@ def generate_invoice_pdf(invoice_id):
     # Generate PDF using the utility function
     pdf_data = generate_pdf_invoice(invoice)
     
-    # Create response
+    # Create response con la API aggiornata di Flask (2.0+)
+    buffer = io.BytesIO(pdf_data)
+    buffer.seek(0)
     return send_file(
-        io.BytesIO(pdf_data),
+        buffer,
         mimetype='application/pdf',
         as_attachment=True,
-        attachment_filename=f'Fattura_{invoice.invoice_number}.pdf'
+        download_name=f'Fattura_{invoice.invoice_number}.pdf'
     )
 
 @app.route('/invoices/send-to-sdi/<int:invoice_id>', methods=['POST'])
@@ -511,7 +513,7 @@ def generate_report():
                 output,
                 mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 as_attachment=True,
-                attachment_filename=f'Report_Fatture_{start_date}_{end_date}.xlsx'
+                download_name=f'Report_Fatture_{start_date}_{end_date}.xlsx'
             )
         else:
             # Generate PDF report
@@ -568,7 +570,7 @@ def generate_report():
                 buffer,
                 mimetype='application/pdf',
                 as_attachment=True,
-                attachment_filename=f'Report_Fatture_{start_date}_{end_date}.pdf'
+                download_name=f'Report_Fatture_{start_date}_{end_date}.pdf'
             )
     
     elif report_type == 'clients':
@@ -638,7 +640,7 @@ def generate_report():
                 output,
                 mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 as_attachment=True,
-                attachment_filename=f'Report_Clienti_{start_date}_{end_date}.xlsx'
+                download_name=f'Report_Clienti_{start_date}_{end_date}.xlsx'
             )
         else:
             # For PDF, we'll create a simpler report
@@ -748,7 +750,7 @@ def generate_report():
                 buffer,
                 mimetype='application/pdf',
                 as_attachment=True,
-                attachment_filename=f'Report_Clienti_{start_date}_{end_date}.pdf'
+                download_name=f'Report_Clienti_{start_date}_{end_date}.pdf'
             )
     
     flash('Tipo di report non valido.', 'danger')
