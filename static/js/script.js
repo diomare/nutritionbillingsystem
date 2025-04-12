@@ -200,24 +200,25 @@ function updateInvoiceTotals() {
         totalVat += itemVat;
     });
     
-    // Calculate ENPAB contribution if the checkbox exists and is checked
-    const applyEnpabCheckbox = document.getElementById('apply_enpab');
-    const enpabRateInput = document.getElementById('enpab_rate');
-    
-    if (applyEnpabCheckbox && applyEnpabCheckbox.checked && enpabRateInput) {
-        const enpabRate = parseFloat(enpabRateInput.value) || 4.0;
-        enpabAmount = subtotal * (enpabRate / 100);
-        
-        // ENPAB is subject to VAT (22%) in Italy
-        totalVat += enpabAmount * 0.22;
-    }
-    
     // Calculate stamp duty if the checkbox exists and is checked
     const applyStampCheckbox = document.getElementById('apply_stamp');
     const stampAmountInput = document.getElementById('stamp_amount');
     
     if (applyStampCheckbox && applyStampCheckbox.checked && stampAmountInput) {
         stampAmount = parseFloat(stampAmountInput.value) || 2.0;
+    }
+    
+    // Calculate ENPAB contribution if the checkbox exists and is checked
+    // Note: ENPAB is calculated on subtotal plus stamp amount
+    const applyEnpabCheckbox = document.getElementById('apply_enpab');
+    const enpabRateInput = document.getElementById('enpab_rate');
+    
+    if (applyEnpabCheckbox && applyEnpabCheckbox.checked && enpabRateInput) {
+        const enpabRate = parseFloat(enpabRateInput.value) || 4.0;
+        enpabAmount = (subtotal + stampAmount) * (enpabRate / 100);
+        
+        // ENPAB is subject to VAT (22%) in Italy
+        totalVat += enpabAmount * 0.22;
     }
     
     // Calculate total: subtotal + ENPAB + VAT on both + stamp

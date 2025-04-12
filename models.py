@@ -116,7 +116,8 @@ class Invoice(db.Model):
     def enpab_amount(self):
         if not self.apply_enpab:
             return 0
-        return self.subtotal * (self.enpab_rate / 100)
+        stamp_amount = self.stamp_amount if self.apply_stamp else 0
+        return (self.subtotal + stamp_amount) * (self.enpab_rate / 100)
     
     @property
     def taxable_amount(self):

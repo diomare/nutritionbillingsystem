@@ -188,9 +188,21 @@
                                 <td colspan="4" class="text-end"><strong>Imponibile:</strong></td>
                                 <td class="text-end">€{{ "%.2f"|format(invoice.subtotal) }}</td>
                             </tr>
+                            {% if invoice.apply_stamp %}
+                            <tr>
+                                <td colspan="4" class="text-end"><strong>Imposta di bollo:</strong></td>
+                                <td class="text-end">€{{ "%.2f"|format(invoice.stamp_duty) }}</td>
+                            </tr>
+                            {% endif %}
                             {% if invoice.apply_enpab %}
                             <tr>
-                                <td colspan="4" class="text-end"><strong>Contributo ENPAB ({{ "%.1f"|format(invoice.enpab_rate) }}%):</strong></td>
+                                <td colspan="4" class="text-end">
+                                    <strong>Contributo ENPAB ({{ "%.1f"|format(invoice.enpab_rate) }}%)
+                                    {% if invoice.apply_stamp %}
+                                    <small class="text-muted">(su imponibile + bollo)</small>
+                                    {% endif %}:
+                                    </strong>
+                                </td>
                                 <td class="text-end">€{{ "%.2f"|format(invoice.enpab_amount) }}</td>
                             </tr>
                             {% endif %}
@@ -198,12 +210,6 @@
                                 <td colspan="4" class="text-end"><strong>IVA:</strong></td>
                                 <td class="text-end">€{{ "%.2f"|format(invoice.total_vat) }}</td>
                             </tr>
-                            {% if invoice.apply_stamp %}
-                            <tr>
-                                <td colspan="4" class="text-end"><strong>Imposta di bollo:</strong></td>
-                                <td class="text-end">€{{ "%.2f"|format(invoice.stamp_duty) }}</td>
-                            </tr>
-                            {% endif %}
                             <tr>
                                 <td colspan="4" class="text-end"><strong>TOTALE FATTURA:</strong></td>
                                 <td class="text-end"><strong>€{{ "%.2f"|format(invoice.total) }}</strong></td>

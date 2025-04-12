@@ -80,13 +80,17 @@ def generate_pdf_invoice(invoice):
     # Add totals row
     data.append(['', '', '', 'Imponibile:', f"€{invoice.subtotal:.2f}"])
     
-    if invoice.apply_enpab:
-        data.append(['', '', '', f'Contributo ENPAB {invoice.enpab_rate}%:', f"€{invoice.enpab_amount:.2f}"])
-    
-    data.append(['', '', '', 'IVA:', f"€{invoice.total_vat:.2f}"])
-    
     if invoice.apply_stamp:
         data.append(['', '', '', 'Imposta di bollo:', f"€{invoice.stamp_duty:.2f}"])
+    
+    if invoice.apply_enpab:
+        # Include note that ENPAB is calculated on subtotal + stamp
+        enpab_label = f'Contributo ENPAB {invoice.enpab_rate}%'
+        if invoice.apply_stamp:
+            enpab_label += ' (su imponibile + bollo)'
+        data.append(['', '', '', enpab_label + ':', f"€{invoice.enpab_amount:.2f}"])
+    
+    data.append(['', '', '', 'IVA:', f"€{invoice.total_vat:.2f}"])
     
     data.append(['', '', '', 'TOTALE:', f"€{invoice.total:.2f}"])
     
