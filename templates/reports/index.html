@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Report - Sistema di Fatturazione{% endblock %}
+
+{% block page_title %}Report{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4 mb-4">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon text-primary">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <h5 class="card-title">Report Fatture</h5>
+                <p class="card-text">Genera report di tutte le fatture in un periodo specifico.</p>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#invoiceReportModal">
+                    Genera Report
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon text-info">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h5 class="card-title">Report Clienti</h5>
+                <p class="card-text">Genera report di tutti i clienti con relative fatture e importi.</p>
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#clientReportModal">
+                    Genera Report
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon text-success">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h5 class="card-title">Report Fiscali</h5>
+                <p class="card-text">Genera report per la dichiarazione dei redditi e adempimenti fiscali.</p>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#fiscalReportModal">
+                    Genera Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Istruzioni per i Report</h5>
+    </div>
+    <div class="card-body">
+        <p>Utilizza questa sezione per generare report e analisi dei dati. I report possono essere scaricati in formato PDF o Excel per una facile consultazione e condivisione.</p>
+        
+        <div class="alert alert-info">
+            <h6 class="alert-heading">Tipi di Report Disponibili</h6>
+            <ul class="mb-0">
+                <li><strong>Report Fatture:</strong> Elenca tutte le fatture in un determinato periodo di tempo, con dettagli su importi, clienti e stato dei pagamenti.</li>
+                <li><strong>Report Clienti:</strong> Fornisce un riepilogo di tutti i clienti, con le relative fatture emesse e gli importi totali.</li>
+                <li><strong>Report Fiscali:</strong> Genera report utili per la dichiarazione dei redditi e altri adempimenti fiscali, come il riepilogo IVA e le fatture inviate al Sistema TS.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Report Modal -->
+<div class="modal fade" id="invoiceReportModal" tabindex="-1" aria-labelledby="invoiceReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invoiceReportModalLabel">Genera Report Fatture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('generate_report') }}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="report_type" value="invoices">
+                    
+                    <div class="mb-3">
+                        <label for="invoice_start_date" class="form-label">Data Inizio</label>
+                        <input type="date" class="form-control" id="invoice_start_date" name="start_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="invoice_end_date" class="form-label">Data Fine</label>
+                        <input type="date" class="form-control" id="invoice_end_date" name="end_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Formato</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format_type" id="invoice_format_pdf" value="pdf" checked>
+                            <label class="form-check-label" for="invoice_format_pdf">
+                                PDF
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format_type" id="invoice_format_excel" value="excel">
+                            <label class="form-check-label" for="invoice_format_excel">
+                                Excel
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Genera Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Client Report Modal -->
+<div class="modal fade" id="clientReportModal" tabindex="-1" aria-labelledby="clientReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clientReportModalLabel">Genera Report Clienti</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('generate_report') }}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="report_type" value="clients">
+                    
+                    <div class="mb-3">
+                        <label for="client_start_date" class="form-label">Data Inizio</label>
+                        <input type="date" class="form-control" id="client_start_date" name="start_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="client_end_date" class="form-label">Data Fine</label>
+                        <input type="date" class="form-control" id="client_end_date" name="end_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Formato</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format_type" id="client_format_pdf" value="pdf" checked>
+                            <label class="form-check-label" for="client_format_pdf">
+                                PDF
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format_type" id="client_format_excel" value="excel">
+                            <label class="form-check-label" for="client_format_excel">
+                                Excel
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Genera Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Fiscal Report Modal -->
+<div class="modal fade" id="fiscalReportModal" tabindex="-1" aria-labelledby="fiscalReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fiscalReportModalLabel">Genera Report Fiscali</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('generate_report') }}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="report_type" value="invoices">
+                    
+                    <div class="mb-3">
+                        <label for="fiscal_start_date" class="form-label">Data Inizio</label>
+                        <input type="date" class="form-control" id="fiscal_start_date" name="start_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fiscal_end_date" class="form-label">Data Fine</label>
+                        <input type="date" class="form-control" id="fiscal_end_date" name="end_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Formato</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format_type" id="fiscal_format_pdf" value="pdf" checked>
+                            <label class="form-check-label" for="fiscal_format_pdf">
+                                PDF
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format_type" id="fiscal_format_excel" value="excel">
+                            <label class="form-check-label" for="fiscal_format_excel">
+                                Excel
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Genera Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set default date values for report forms
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get current date for end date
+        const today = new Date();
+        const formattedToday = today.toISOString().split('T')[0];
+        
+        // Get date from 1 year ago for start date
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const formattedOneYearAgo = oneYearAgo.toISOString().split('T')[0];
+        
+        // Set values for all date pickers
+        document.querySelectorAll('input[name="start_date"]').forEach(function(input) {
+            input.value = formattedOneYearAgo;
+        });
+        
+        document.querySelectorAll('input[name="end_date"]').forEach(function(input) {
+            input.value = formattedToday;
+        });
+    });
+</script>
+{% endblock %}
