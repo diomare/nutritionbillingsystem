@@ -95,6 +95,10 @@ class Invoice(db.Model):
     sent_to_sdi = db.Column(db.Boolean, default=False)  # Sent to Sistema di Interscambio
     sent_to_sts = db.Column(db.Boolean, default=False)  # Sent to Sistema Tessera Sanitaria
     health_service_related = db.Column(db.Boolean, default=False)  # If related to health services
+    apply_enpab = db.Column(db.Boolean, default=True)  # Apply ENPAB contribution (4%)
+    apply_stamp = db.Column(db.Boolean, default=True)  # Apply revenue stamp (€2.00)
+    stamp_amount = db.Column(db.Float, default=2.00)  # Revenue stamp amount, default €2.00
+    enpab_rate = db.Column(db.Float, default=4.00)  # ENPAB rate, default 4%
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -109,12 +113,30 @@ class Invoice(db.Model):
         return sum(item.total_price for item in self.items)
     
     @property
+    def enpab_amount(self):
+        if not self.apply_enpab:
+            return 0
+        return self.subtotal * (self.enpab_rate / 100)
+    
+    @property
+    def taxable_amount(self):
+        # Subtotal + ENPAB contribution
+        return self.subtotal + self.enpab_amount
+    
+    @property
     def total_vat(self):
-        return sum(item.total_price * (item.vat_rate / 100) for item in self.items)
+        return sum(item.total_price * (item.vat_rate / 100) for item in self.items) + (self.enpab_amount * 0.22)
+    
+    @property
+    def stamp_duty(self):
+        if not self.apply_stamp:
+            return 0
+        return self.stamp_amount
     
     @property
     def total(self):
-        return self.subtotal + self.total_vat
+        # Subtotal + ENPAB + VAT + Stamp
+        return self.taxable_amount + self.total_vat + self.stamp_duty
     
     @property
     def client_name(self):
