@@ -215,10 +215,12 @@ function updateInvoiceTotals() {
     
     if (applyEnpabCheckbox && applyEnpabCheckbox.checked && enpabRateInput) {
         const enpabRate = parseFloat(enpabRateInput.value) || 4.0;
+        // Calcola l'ENPAB sul totale imponibile + bollo
         enpabAmount = (subtotal + stampAmount) * (enpabRate / 100);
         
-        // ENPAB is subject to VAT (22%) in Italy
-        totalVat += enpabAmount * 0.22;
+        // Ma l'IVA si applica solo sull'ENPAB calcolato sull'imponibile (non sul bollo)
+        const enpabWithoutStamp = subtotal * (enpabRate / 100);
+        totalVat += enpabWithoutStamp * 0.22;
     }
     
     // Calculate total: subtotal + ENPAB + VAT on both + stamp
