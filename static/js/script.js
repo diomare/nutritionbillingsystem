@@ -182,6 +182,8 @@ function setupInvoiceCalculations() {
 function updateInvoiceTotals() {
     let subtotal = 0;
     let totalVat = 0;
+    let enpabAmount = 0;
+    let stampAmount = 0;
     
     // Calculate total for each item
     document.querySelectorAll('.invoice-item').forEach(item => {
@@ -198,14 +200,74 @@ function updateInvoiceTotals() {
         totalVat += itemVat;
     });
     
-    const total = subtotal + totalVat;
+    // Calculate ENPAB contribution if the checkbox exists and is checked
+    const applyEnpabCheckbox = document.getElementById('apply_enpab');
+    const enpabRateInput = document.getElementById('enpab_rate');
+    
+    if (applyEnpabCheckbox && applyEnpabCheckbox.checked && enpabRateInput) {
+        const enpabRate = parseFloat(enpabRateInput.value) || 4.0;
+        enpabAmount = subtotal * (enpabRate / 100);
+        
+        // ENPAB is subject to VAT (22%) in Italy
+        totalVat += enpabAmount * 0.22;
+    }
+    
+    // Calculate stamp duty if the checkbox exists and is checked
+    const applyStampCheckbox = document.getElementById('apply_stamp');
+    const stampAmountInput = document.getElementById('stamp_amount');
+    
+    if (applyStampCheckbox && applyStampCheckbox.checked && stampAmountInput) {
+        stampAmount = parseFloat(stampAmountInput.value) || 2.0;
+    }
+    
+    // Calculate total: subtotal + ENPAB + VAT on both + stamp
+    const taxableAmount = subtotal + enpabAmount;
+    const total = taxableAmount + totalVat + stampAmount;
     
     // Update summary values if they exist
     const subtotalElement = document.getElementById('invoice-subtotal');
+    const enpabElement = document.getElementById('invoice-enpab');
     const vatElement = document.getElementById('invoice-vat');
+    const stampElement = document.getElementById('invoice-stamp');
     const totalElement = document.getElementById('invoice-total');
     
     if (subtotalElement) subtotalElement.textContent = subtotal.toFixed(2);
+    if (enpabElement && applyEnpabCheckbox && applyEnpabCheckbox.checked) {
+        enpabElement.textContent = enpabAmount.toFixed(2);
+        enpabElement.parentElement.style.display = 'block';
+    } else if (enpabElement) {
+        enpabElement.parentElement.style.display = 'none';
+    }
+    
     if (vatElement) vatElement.textContent = totalVat.toFixed(2);
+    
+    if (stampElement && applyStampCheckbox && applyStampCheckbox.checked) {
+        stampElement.textContent = stampAmount.toFixed(2);
+        stampElement.parentElement.style.display = 'block';
+    } else if (stampElement) {
+        stampElement.parentElement.style.display = 'none';
+    }
+    
     if (totalElement) totalElement.textContent = total.toFixed(2);
+    
+    // Add event listeners to the checkboxes to recalculate when they change
+    if (applyEnpabCheckbox && !applyEnpabCheckbox._hasListener) {
+        applyEnpabCheckbox.addEventListener('change', updateInvoiceTotals);
+        applyEnpabCheckbox._hasListener = true;
+    }
+    
+    if (enpabRateInput && !enpabRateInput._hasListener) {
+        enpabRateInput.addEventListener('input', updateInvoiceTotals);
+        enpabRateInput._hasListener = true;
+    }
+    
+    if (applyStampCheckbox && !applyStampCheckbox._hasListener) {
+        applyStampCheckbox.addEventListener('change', updateInvoiceTotals);
+        applyStampCheckbox._hasListener = true;
+    }
+    
+    if (stampAmountInput && !stampAmountInput._hasListener) {
+        stampAmountInput.addEventListener('input', updateInvoiceTotals);
+        stampAmountInput._hasListener = true;
+    }
 }
