@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Clienti Privati" if client_type == "private" else "Clienti Aziendali" }} - Sistema di Fatturazione{% endblock %}
+
+{% block page_title %}{{ "Clienti Privati" if client_type == "private" else "Clienti Aziendali" }}{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('add_private_client' if client_type == 'private' else 'add_business_client') }}" class="btn btn-primary">
+    <i class="fas fa-plus me-1"></i> Aggiungi {{ "Cliente Privato" if client_type == "private" else "Cliente Aziendale" }}
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">{{ "Elenco Clienti Privati" if client_type == "private" else "Elenco Clienti Aziendali" }}</h5>
+            </div>
+            <div class="col-md-6">
+                <form method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control" placeholder="Cerca..." value="{{ search_term }}">
+                    <button type="submit" class="btn btn-primary ms-2">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    {% if search_term %}
+                    <a href="{{ url_for('private_clients' if client_type == 'private' else 'business_clients') }}" class="btn btn-secondary ms-2">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if clients %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover data-table">
+                    <thead>
+                        <tr>
+                            {% if client_type == 'private' %}
+                            <th>Nome</th>
+                            <th>Cognome</th>
+                            <th>Codice Fiscale</th>
+                            <th>Email</th>
+                            <th>Telefono</th>
+                            {% else %}
+                            <th>Ragione Sociale</th>
+                            <th>Partita IVA</th>
+                            <th>Codice Fiscale</th>
+                            <th>Email</th>
+                            <th>Referente</th>
+                            {% endif %}
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr>
+                            {% if client_type == 'private' %}
+                            <td>{{ client.first_name }}</td>
+                            <td>{{ client.last_name }}</td>
+                            <td>{{ client.fiscal_code }}</td>
+                            <td>{{ client.email or '-' }}</td>
+                            <td>{{ client.phone or '-' }}</td>
+                            {% else %}
+                            <td>{{ client.business_name }}</td>
+                            <td>{{ client.vat_number }}</td>
+                            <td>{{ client.fiscal_code or '-' }}</td>
+                            <td>{{ client.email or '-' }}</td>
+                            <td>{{ client.contact_person or '-' }}</td>
+                            {% endif %}
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('view_private_client' if client_type == 'private' else 'view_business_client', client_id=client.id) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Visualizza">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('edit_private_client' if client_type == 'private' else 'edit_business_client', client_id=client.id) }}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Modifica">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteClientModal{{ client.id }}" data-bs-toggle="tooltip" title="Elimina">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteClientModal{{ client.id }}" tabindex="-1" aria-labelledby="deleteClientModalLabel{{ client.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteClientModalLabel{{ client.id }}">Conferma eliminazione</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Sei sicuro di voler eliminare
+                                                {% if client_type == 'private' %}
+                                                il cliente <strong>{{ client.first_name }} {{ client.last_name }}</strong>?
+                                                {% else %}
+                                                il cliente <strong>{{ client.business_name }}</strong>?
+                                                {% endif %}
+                                                <p class="text-danger mt-2">Questa azione non può essere annullata e eliminerà anche tutte le fatture associate a questo cliente.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                                                <form action="{{ url_for('delete_private_client' if client_type == 'private' else 'delete_business_client', client_id=client.id) }}" method="post">
+                                                    <button type="submit" class="btn btn-danger">Elimina</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                {% if search_term %}
+                    Nessun cliente trovato con il termine di ricerca "{{ search_term }}".
+                    <a href="{{ url_for('private_clients' if client_type == 'private' else 'business_clients') }}" class="alert-link">Visualizza tutti i clienti</a>
+                {% else %}
+                    Non hai ancora aggiunto nessun cliente.
+                    <a href="{{ url_for('add_private_client' if client_type == 'private' else 'add_business_client') }}" class="alert-link">Aggiungi il tuo primo cliente</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Additional client-specific JavaScript can be added here
+</script>
+{% endblock %}

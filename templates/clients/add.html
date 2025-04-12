@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Aggiungi {{ "Cliente Privato" if client_type == "private" else "Cliente Aziendale" }} - Sistema di Fatturazione{% endblock %}
+
+{% block page_title %}Aggiungi {{ "Cliente Privato" if client_type == "private" else "Cliente Aziendale" }}{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('private_clients' if client_type == 'private' else 'business_clients') }}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left me-1"></i> Torna all'elenco
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" class="needs-validation" novalidate>
+            {% if client_type == 'private' %}
+            <!-- Private Client Form -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label">Nome <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                    <div class="invalid-feedback">
+                        Il nome è obbligatorio.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label">Cognome <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                    <div class="invalid-feedback">
+                        Il cognome è obbligatorio.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="fiscal_code" class="form-label">Codice Fiscale <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="fiscal_code" name="fiscal_code" maxlength="16" required>
+                    <div class="invalid-feedback">
+                        Il codice fiscale è obbligatorio.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="date_of_birth" class="form-label">Data di Nascita</label>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                    <div class="invalid-feedback">
+                        Inserisci un indirizzo email valido.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Telefono</label>
+                    <input type="tel" class="form-control" id="phone" name="phone">
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="address" class="form-label">Indirizzo</label>
+                    <input type="text" class="form-control" id="address" name="address">
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="city" class="form-label">Città</label>
+                    <input type="text" class="form-control" id="city" name="city">
+                </div>
+                <div class="col-md-4">
+                    <label for="postal_code" class="form-label">CAP</label>
+                    <input type="text" class="form-control" id="postal_code" name="postal_code" maxlength="5">
+                </div>
+                <div class="col-md-4">
+                    <label for="province" class="form-label">Provincia</label>
+                    <input type="text" class="form-control" id="province" name="province" maxlength="2">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="notes" class="form-label">Note</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+            </div>
+            
+            {% else %}
+            <!-- Business Client Form -->
+            <div class="mb-3">
+                <label for="business_name" class="form-label">Ragione Sociale <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="business_name" name="business_name" required>
+                <div class="invalid-feedback">
+                    La ragione sociale è obbligatoria.
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="vat_number" class="form-label">Partita IVA <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="vat_number" name="vat_number" required>
+                    <div class="invalid-feedback">
+                        La partita IVA è obbligatoria.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="fiscal_code" class="form-label">Codice Fiscale</label>
+                    <input type="text" class="form-control" id="fiscal_code" name="fiscal_code" maxlength="16">
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="sdi_code" class="form-label">Codice SDI</label>
+                    <input type="text" class="form-control" id="sdi_code" name="sdi_code" maxlength="7">
+                    <small class="form-text text-muted">Codice Destinatario per la Fatturazione Elettronica</small>
+                </div>
+                <div class="col-md-6">
+                    <label for="pec" class="form-label">PEC</label>
+                    <input type="email" class="form-control" id="pec" name="pec">
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Telefono</label>
+                    <input type="tel" class="form-control" id="phone" name="phone">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="contact_person" class="form-label">Persona di Riferimento</label>
+                <input type="text" class="form-control" id="contact_person" name="contact_person">
+            </div>
+            
+            <div class="mb-3">
+                <label for="address" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="city" class="form-label">Città</label>
+                    <input type="text" class="form-control" id="city" name="city">
+                </div>
+                <div class="col-md-4">
+                    <label for="postal_code" class="form-label">CAP</label>
+                    <input type="text" class="form-control" id="postal_code" name="postal_code" maxlength="5">
+                </div>
+                <div class="col-md-4">
+                    <label for="province" class="form-label">Provincia</label>
+                    <input type="text" class="form-control" id="province" name="province" maxlength="2">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="notes" class="form-label">Note</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+            </div>
+            {% endif %}
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{{ url_for('private_clients' if client_type == 'private' else 'business_clients') }}" class="btn btn-secondary me-md-2">Annulla</a>
+                <button type="submit" class="btn btn-primary">Salva Cliente</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+        
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+    
+    {% if client_type == 'private' %}
+    // Format fiscal code in uppercase
+    document.getElementById('fiscal_code').addEventListener('input', function(e) {
+        this.value = this.value.toUpperCase();
+    });
+    {% endif %}
+</script>
+{% endblock %}
