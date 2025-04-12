@@ -577,16 +577,23 @@ def generate_report():
         # Get clients with invoice count and total amount
         if format_type == 'excel':
             # For Excel, we'll create a more detailed report
-            private_clients = db.session.query(
-                PrivateClient,
-                db.func.count(Invoice.id).label('invoice_count'),
-                db.func.sum(Invoice.total).label('total_amount')
-            ).outerjoin(Invoice, Invoice.private_client_id == PrivateClient.id).filter(
-                db.or_(
-                    Invoice.invoice_date.between(start_date, end_date),
-                    Invoice.invoice_date == None
-                )
-            ).group_by(PrivateClient.id).all()
+            # Invece di usare Invoice.total che è una property, usiamo un approccio diverso
+            private_clients_data = []
+            
+            # Otteniamo prima tutti i clienti privati
+            all_private_clients = PrivateClient.query.all()
+            
+            for client in all_private_clients:
+                # Per ogni cliente, troviamo le fatture nel periodo specificato
+                invoices = Invoice.query.filter_by(private_client_id=client.id).filter(
+                    Invoice.invoice_date.between(start_date, end_date)
+                ).all()
+                
+                # Calcoliamo il totale manualmente
+                invoice_count = len(invoices)
+                total_amount = sum(invoice.total for invoice in invoices)
+                
+                private_clients_data.append((client, invoice_count, total_amount))
             
             business_clients = db.session.query(
                 BusinessClient,
@@ -601,7 +608,7 @@ def generate_report():
             
             # Create DataFrame for private clients
             private_data = []
-            for client, count, amount in private_clients:
+            for client, count, amount in private_clients_data:
                 private_data.append({
                     'Tipo': 'Privato',
                     'Nome': f"{client.first_name} {client.last_name}",
@@ -654,23 +661,30 @@ def generate_report():
             elements.append(Spacer(1, 12))
             
             # Get private clients with invoice data
-            private_clients = db.session.query(
-                PrivateClient,
-                db.func.count(Invoice.id).label('invoice_count'),
-                db.func.sum(Invoice.total).label('total_amount')
-            ).outerjoin(Invoice, Invoice.private_client_id == PrivateClient.id).filter(
-                db.or_(
-                    Invoice.invoice_date.between(start_date, end_date),
-                    Invoice.invoice_date == None
-                )
-            ).group_by(PrivateClient.id).all()
+            # Invece di usare Invoice.total che è una property, usiamo un approccio diverso
+            private_clients_pdf = []
+            
+            # Otteniamo prima tutti i clienti privati
+            all_private_clients = PrivateClient.query.all()
+            
+            for client in all_private_clients:
+                # Per ogni cliente, troviamo le fatture nel periodo specificato
+                invoices = Invoice.query.filter_by(private_client_id=client.id).filter(
+                    Invoice.invoice_date.between(start_date, end_date)
+                ).all()
+                
+                # Calcoliamo il totale manualmente
+                invoice_count = len(invoices)
+                total_amount = sum(invoice.total for invoice in invoices)
+                
+                private_clients_pdf.append((client, invoice_count, total_amount))
             
             # Create table for private clients
             elements.append(Paragraph("Clienti Privati", styles['Heading2']))
             elements.append(Spacer(1, 6))
             
             private_data = [['Nome', 'Codice Fiscale', 'N. Fatture', 'Totale']]
-            for client, count, amount in private_clients:
+            for client, count, amount in private_clients_pdf:
                 private_data.append([
                     f"{client.first_name} {client.last_name}",
                     client.fiscal_code,
@@ -699,16 +713,23 @@ def generate_report():
             elements.append(Spacer(1, 20))
             
             # Get business clients with invoice data
-            business_clients = db.session.query(
-                BusinessClient,
-                db.func.count(Invoice.id).label('invoice_count'),
-                db.func.sum(Invoice.total).label('total_amount')
-            ).outerjoin(Invoice, Invoice.business_client_id == BusinessClient.id).filter(
-                db.or_(
-                    Invoice.invoice_date.between(start_date, end_date),
-                    Invoice.invoice_date == None
-                )
-            ).group_by(BusinessClient.id).all()
+            # Invece di usare Invoice.total che è una property, usiamo un approccio diverso
+            business_clients_pdf = []
+            
+            # Otteniamo prima tutti i clienti aziendali
+            all_business_clients = BusinessClient.query.all()
+            
+            for client in all_business_clients:
+                # Per ogni cliente, troviamo le fatture nel periodo specificato
+                invoices = Invoice.query.filter_by(business_client_id=client.id).filter(
+                    Invoice.invoice_date.between(start_date, end_date)
+                ).all()
+                
+                # Calcoliamo il totale manualmente
+                invoice_count = len(invoices)
+                total_amount = sum(invoice.total for invoice in invoices)
+                
+                business_clients_pdf.append((client, invoice_count, total_amount))
             
             # Create table for business clients
             elements.append(Paragraph("Clienti Aziendali", styles['Heading2']))
