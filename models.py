@@ -128,8 +128,20 @@ class Invoice(db.Model):
     def total_vat(self):
         # Calcola l'IVA sugli elementi della fattura e sul contributo ENPAB (22%)
         # Il bollo non è soggetto a IVA
-        enpab_without_stamp = self.subtotal * (self.enpab_rate / 100) if self.apply_enpab else 0
-        return sum(item.total_price * (item.vat_rate / 100) for item in self.items) + (enpab_without_stamp * 0.22)
+        
+        # Prima calcola l'IVA sugli elementi della fattura
+        items_vat = sum(item.total_price * (item.vat_rate / 100) for item in self.items)
+        
+        # Se non ci sono elementi con IVA, non applicare l'IVA all'ENPAB
+        has_vat_items = any(item.vat_rate > 0 for item in self.items)
+        
+        # Applica l'IVA all'ENPAB solo se ci sono elementi con IVA
+        enpab_vat = 0
+        if has_vat_items and self.apply_enpab:
+            enpab_without_stamp = self.subtotal * (self.enpab_rate / 100)
+            enpab_vat = enpab_without_stamp * 0.22
+            
+        return items_vat + enpab_vat
     
     @property
     def stamp_duty(self):
