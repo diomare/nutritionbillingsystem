@@ -1,3 +1,4 @@
+import os
 import io
 from datetime import datetime
 from reportlab.pdfgen import canvas
@@ -6,12 +7,25 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.units import cm
+import xml.etree.ElementTree as ET
+import zipfile
+import os
+import json 
 
+def carica_professionista(percorso="config/professionista.json"):
+    with open(percorso, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def salva_professionista(dati, percorso="config/professionista.json"):
+    with open(percorso, "w", encoding="utf-8") as f:
+        json.dump(dati, f, indent=4)
 
 def generate_invoice_number():
-    """Generate a unique invoice number based on the current date and time."""
-    now = datetime.now()
-    return f"FT{now.strftime('%Y%m%d%H%M%S')}"
+    prof = carica_professionista()
+    numero = prof.get("numero_fattura_corrente", 0)
+    prof["numero_fattura_corrente"] = numero + 1
+    salva_professionista(prof)
+    return numero
 
 
 def generate_pdf_invoice(invoice):
@@ -172,6 +186,29 @@ def generate_pdf_invoice(invoice):
         """
     
     elements.append(Paragraph(footer_text, normal_style))
+    
+def genera_xml_ts(fattura, output_path="fattura_ts.xml"):
+    root = ET.Element("SpeseSanitarie")
+    spesa = ET.SubElement(root, "Spesa")
+
+    ET.SubElement(spesa, "Identificativo").text = str(fattura.get("id", ""))
+    ET.SubElement(spesa, "CodiceFiscale").text = fattura.get("codice_fiscale", "")
+    ET.SubElement(spesa, "DataSpesa").text = fattura.get("data", datetime.today().strftime("%Y-%m-%d"))
+    ET.SubElement(spesa, "TipoSpesa").text = fattura.get("tipo_spesa", "SR")
+    ET.SubElement(spesa, "Importo").text = str(fattura.get("importo", "0.00"))
+    ET.SubElement(spesa, "TipoPagamento").text = fattura.get("tipo_pagamento", "MP")
+    ET.SubElement(spesa, "FlagOpposizione").text = fattura.get("flag_opposizione", "N")
+
+    tree = ET.ElementTree(root)
+    tree.write(output_path, encoding="utf-8", xml_declaration=True)
+    return output_path
+
+
+def crea_zip_fatture(percorso_zip, lista_file):
+    with zipfile.ZipFile(percorso_zip, 'w') as zipf:
+        for file in lista_file:
+            zipf.write(file, arcname=os.path.basename(file))
+    return percorso_zip
     
     # Build the PDF
     doc.build(elements)
