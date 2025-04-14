@@ -79,7 +79,19 @@ class InvoiceItem(db.Model):
     def total_price(self):
         return self.quantity * self.unit_price
 
-
+class Professionista(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100))
+    cognome = db.Column(db.String(100))
+    indirizzo = db.Column(db.String(200))
+    piva = db.Column(db.String(20))
+    codice_fiscale = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    telefono = db.Column(db.String(20))
+    numero_fattura_corrente = db.Column(db.Integer)
+    
+    
+    
 class Invoice(db.Model):
     __tablename__ = 'invoices'
     
