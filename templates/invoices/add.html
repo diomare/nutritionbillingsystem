@@ -16,6 +16,17 @@
         <form method="post" class="needs-validation" novalidate>
             
             <!-- Invoice Basic Information -->
+             <!-- Dati del Professionista -->
+<div class="mb-4">
+    <h5>Professionista</h5>
+    <p class="mb-1"><strong>{{ professionista.nome }} {{ professionista.cognome }}</strong></p>
+    <p class="mb-1">{{ professionista.indirizzo }}</p>
+    <p class="mb-1">P.IVA: {{ professionista.piva }}</p>
+    <p class="mb-1">Codice Fiscale: {{ professionista.codice_fiscale }}</p>
+    <p class="mb-1">Email: {{ professionista.email }}</p>
+</div>
+
+
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="invoice_number" class="form-label">Numero Fattura</label>
@@ -261,6 +272,30 @@
         
         stampCheckbox.addEventListener('change', toggleStampField);
         toggleStampField(); // Initial state
+    });
+
+    // Toggle visibility of client sections based on client type selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const clientTypePrivate = document.getElementById('client_type_private');
+        const clientTypeBusiness = document.getElementById('client_type_business');
+        const privateClientSection = document.getElementById('private-client-section');
+        const businessClientSection = document.getElementById('business-client-section');
+
+        function toggleClientSections() {
+            if (clientTypePrivate.checked) {
+                privateClientSection.style.display = 'block';
+                businessClientSection.style.display = 'none';
+            } else if (clientTypeBusiness.checked) {
+                privateClientSection.style.display = 'none';
+                businessClientSection.style.display = 'block';
+            }
+        }
+
+        clientTypePrivate.addEventListener('change', toggleClientSections);
+        clientTypeBusiness.addEventListener('change', toggleClientSections);
+
+        // Initial toggle based on default selection
+        toggleClientSections();
     });
 </script>
 {% endblock %}
