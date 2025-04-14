@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+<!-- Custom CSS -->
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  <title>Configurazione Professionista</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 1rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      background-color: #0055aa;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Configurazione Professionista</h1>
+
+<form method="POST">
+  <label>
+    Nome:
+    <input type="text" name="nome" value="{{ prof.nome or '' }}">
+  </label>
+  <label>
+    Cognome:
+    <input type="text" name="cognome" value="{{ prof.cognome or '' }}">
+  </label>
+  <label>
+    Indirizzo:
+    <input type="text" name="indirizzo" value="{{ prof.indirizzo or '' }}">
+  </label>
+  <label>
+    Codice Fiscale:
+    <input type="text" name="codice_fiscale" value="{{ prof.codice_fiscale or '' }}">
+  </label> 
+  <label>
+    Partita IVA:
+    <input type="text" name="partita_iva" value="{{ prof.partita_iva or '' }}">
+  </label>  
+  <label>
+    Email:
+    <input type="text" name="email" value="{{ prof.email or '' }}">
+  </label>
+  <label>
+    Telefono:
+    <input type="text" name="telefono" value="{{ prof.telefono or '' }}">
+  </label>  
+  <label>
+    Numero Fattura Corrente:
+    <input type="number" name="numero_fattura_corrente" value="{{ prof.numero_fattura_corrente or 1 }}">
+  </label>
+  <button type="submit">Salva</button>
+</form>
+
+<a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">
+  <i class="fas fa-arrow-left me-2"></i> Torna alla Dashboard
+</a>
+
+  </body>
+  
+</html>
