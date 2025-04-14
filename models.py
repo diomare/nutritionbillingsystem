@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 class PrivateClient(db.Model):
@@ -16,8 +16,8 @@ class PrivateClient(db.Model):
     province = db.Column(db.String(2), nullable=True)
     date_of_birth = db.Column(db.Date, nullable=True)
     notes = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Relationship with invoices
     invoices = db.relationship('Invoice', backref='private_client', lazy=True, 
@@ -48,8 +48,8 @@ class BusinessClient(db.Model):
     province = db.Column(db.String(2), nullable=True)
     contact_person = db.Column(db.String(100), nullable=True)
     notes = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Relationship with invoices
     invoices = db.relationship('Invoice', backref='business_client', lazy=True,
@@ -69,8 +69,8 @@ class InvoiceItem(db.Model):
     unit_price = db.Column(db.Float, nullable=False)
     vat_rate = db.Column(db.Float, nullable=False, default=22.0)  # Default 22% VAT in Italy
     exemption_reason = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     def __repr__(self):
         return f'<InvoiceItem {self.description}>'
@@ -111,8 +111,8 @@ class Invoice(db.Model):
     apply_stamp = db.Column(db.Boolean, default=True)  # Apply revenue stamp (€2.00)
     stamp_amount = db.Column(db.Float, default=2.00)  # Revenue stamp amount, default €2.00
     enpab_rate = db.Column(db.Float, default=4.00)  # ENPAB rate, default 4%
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Relationship with invoice items
     items = db.relationship('InvoiceItem', backref='invoice', lazy=True, cascade="all, delete-orphan")
