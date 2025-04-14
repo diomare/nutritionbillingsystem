@@ -106,18 +106,24 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="{{ url_for('add_invoice') }}" class="btn btn-success">
-                        <i class="fas fa-plus-circle me-2"></i> Nuova Fattura
-                    </a>
-                    <a href="{{ url_for('add_private_client') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-2"></i> Nuovo Cliente Privato
-                    </a>
-                    <a href="{{ url_for('add_business_client') }}" class="btn btn-info">
-                        <i class="fas fa-building me-2"></i> Nuovo Cliente Aziendale
-                    </a>
-                    <a href="{{ url_for('reports') }}" class="btn btn-secondary">
-                        <i class="fas fa-chart-bar me-2"></i> Genera Report
-                    </a>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('add_invoice') }}" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-2"></i> Nuova Fattura
+                        </a>
+                        <a href="{{ url_for('add_private_client') }}" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Nuovo Cliente Privato
+                        </a>
+                        <a href="{{ url_for('add_business_client') }}" class="btn btn-info">
+                            <i class="fas fa-building me-2"></i> Nuovo Cliente Aziendale
+                        </a>
+                        <a href="{{ url_for('reports') }}" class="btn btn-secondary">
+                            <i class="fas fa-chart-bar me-2"></i> Genera Report
+                        </a>
+                        <a href="{{ url_for('configura_professionista') }}" class="btn btn-warning">
+                            <i class="fas fa-user-cog me-2"></i> Dati Professionista
+                        </a>
+                    </div>
+                    
                 </div>
             </div>
         </div>
